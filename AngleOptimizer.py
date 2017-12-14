@@ -10,8 +10,20 @@ def optimize(angles, stepSize, T, reg):
         gradient = getGradient(orgAngles, angles, triangles, reg)
         for key in angles:
             angles[key] = angles[key] - gradient[key]*stepSize
-
     return angles, triangles
+
+def getAngles2():
+    angles = dict()
+    angles[0, 2, 3] = 60
+    angles[0, 1, 3] = 60
+    angles[1, 0, 3] = 60
+    angles[1, 2, 3] = 60
+    angles[2, 1, 3] = 60
+    angles[2, 0, 3] = 60
+    angles[3, 0, 1] = 160
+    angles[3, 1, 2] = 120
+    angles[3, 0, 2] = 120
+    return angles
 
 def getAngles():
     angles = dict()
@@ -21,7 +33,6 @@ def getAngles():
     angles[2, 1, 0] = 79
     angles[2, 0, 3] = 81
     angles[3, 2, 0] = 50
-
 
     angles[0, 3, 4] = 50
     angles[0, 2, 4] = 50
@@ -37,8 +48,6 @@ def getAngles():
     return angles
 
 def getTriangles(angles):
-
-    n = 6
     triangles = dict()
     for home in angles:
         for first in angles:
@@ -46,9 +55,8 @@ def getTriangles(angles):
                 for second in angles:
                     if (second[0] == home[2] and second[1] == home[0] and second[2] == home[1]) or (second[0] == home[2] and second[1] == home[1] and second[2] == home[0]):
                         triangles[home] = angles[home] + angles[first] + angles[second]
-
-
     """
+    n = 6
     for i in range(n):
         for j in range(n):
             for k in range(n):
@@ -82,11 +90,11 @@ def getGradient(orgAngles, angles, triangles,reg):
     gradient = dict()
     for key in angles:
         triangleAngle = triangles[key]
-        grad = triangleAngle*2 - 400# + reg * abs(orgAngles[key]-angles[key])
+        grad = triangleAngle*2 - 400 + reg * abs(orgAngles[key]-angles[key])
         gradient[key] = grad
 
     return gradient
 
-angles, triangles = optimize(getAngles(), 0.1 ,100, 1)
+angles, triangles = optimize(getAngles2(), 0.05 ,100, 10)
 print(angles)
 print(triangles)
