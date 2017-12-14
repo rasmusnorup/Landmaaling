@@ -1,5 +1,5 @@
 import numpy as np
-
+import Data
 
 def optimize(angles, stepSize, T, reg):
     angles, triangles = getTriangles(angles)
@@ -15,14 +15,20 @@ def optimize(angles, stepSize, T, reg):
 def getAngles2():
     angles = dict()
     angles[0, 2, 3] = 60
-    angles[0, 1, 3] = 60
+    angles[0, 3, 1] = 60
     angles[1, 0, 3] = 60
-    angles[1, 2, 3] = 60
+    angles[1, 3, 2] = 60
     angles[2, 1, 3] = 60
-    angles[2, 0, 3] = 60
-    angles[3, 0, 1] = 160
-    angles[3, 1, 2] = 120
+    angles[2, 3, 0] = 60
+    angles[3, 1, 0] = 160
+    angles[3, 2, 1] = 120
     angles[3, 0, 2] = 120
+
+    #outer angles:
+    angles[0, 1, 2] = 400-120
+    angles[1, 2, 0] = 400-120
+    angles[2, 0, 1] = 400-120
+
     return angles
 
 def getAngles():
@@ -50,11 +56,14 @@ def getAngles():
 def getTriangles(angles):
     triangles = dict()
     for home in angles:
-        for first in angles:
-            if (first[0] == home[1] and first[1] == home[0] and first[2] == home[2]) or (first[0] == home[1] and first[1] == home[2] and first[2] == home[0]):
-                for second in angles:
-                    if (second[0] == home[2] and second[1] == home[0] and second[2] == home[1]) or (second[0] == home[2] and second[1] == home[1] and second[2] == home[0]):
-                        triangles[home] = angles[home] + angles[first] + angles[second]
+        if angles[home] < 200:
+            for first in angles:
+                if angles[first] < 200:
+                    if (first[0] == home[1] and first[1] == home[2] and first[2] == home[0]):
+                        for second in angles:
+                            if angles[second] < 200:
+                                if (second[0] == home[2] and second[1] == home[0] and second[2] == home[1]):
+                                    triangles[home] = angles[home] + angles[first] + angles[second]
     """
     n = 6
     for i in range(n):
@@ -72,12 +81,13 @@ def getTriangles(angles):
                                 triangles[i, j, k] = angles[i, j, k] + angles[j, i, k] + angles[k, i, j]
                             if (k, j, i) in angles:
                                 triangles[i, j, k] = angles[i, j, k] + angles[j, i, k] + angles[k, j, i]
-    """
+    
     #Done: clean up angles not in triangles
     for key in list(angles):
         if key not in triangles:
             print("Angle " + str(key) + " " + str(angles[key]) + " removed")
             angles.pop(key)
+    """
     return angles, triangles
 
 def getCost(triangles):
@@ -88,13 +98,36 @@ def getCost(triangles):
 
 def getGradient(orgAngles, angles, triangles,reg):
     gradient = dict()
+    points = getPoints(angles)
     for key in angles:
-        triangleAngle = triangles[key]
-        grad = triangleAngle*2 - 400 + reg * abs(orgAngles[key]-angles[key])
+        triangleAngle = 200
+        if key in triangles:
+            triangleAngle = triangles[key]
+            point = points[key[0]]
+        grad = triangleAngle*2 - 400 + point*2 - 800 #+ reg * abs(orgAngles[key]-angles[key])
         gradient[key] = grad
 
     return gradient
 
-angles, triangles = optimize(getAngles2(), 0.05 ,100, 10)
+def getPoints(angles):
+    points = dict()
+    for key in angles:
+        if key[0] not in points:
+            points[key[0]] = 0
+        points[key[0]] = points[key[0]] + angles[key]
+
+    return points
+
+def getError(triangles, points):
+    triError = sum([abs(triangles[key]-200) for key in triangles])
+    pointError = sum([abs(points[key]-400) for key in points])
+    return triError, pointError
+
+angles, triangles = optimize(getAngles2(), 0.05 ,1000, 10)
 print(angles)
 print(triangles)
+print(getPoints(angles))
+triError, pointError = getError(triangles, getPoints(angles))
+print(triError)
+print(pointError)
+print(Data.getAngles())
