@@ -59,7 +59,7 @@ def getTriangles(angles):
         if angles[home] < 200:
             for first in angles:
                 if angles[first] < 200:
-                    if (first[0] == home[1] and first[1] == home[2] and first[2] == home[0]):
+                    if first[0] == home[1] and first[1] == home[2] and first[2] == home[0]:
                         for second in angles:
                             if angles[second] < 200:
                                 if (second[0] == home[2] and second[1] == home[0] and second[2] == home[1]):
@@ -103,7 +103,7 @@ def getGradient(orgAngles, angles, triangles,reg):
         triangleAngle = 200
         if key in triangles:
             triangleAngle = triangles[key]
-            point = points[key[0]]
+        point = points[key[1]]
         grad = triangleAngle*2 - 400 + point*2 - 800 #+ reg * abs(orgAngles[key]-angles[key])
         gradient[key] = grad
 
@@ -112,9 +112,9 @@ def getGradient(orgAngles, angles, triangles,reg):
 def getPoints(angles):
     points = dict()
     for key in angles:
-        if key[0] not in points:
-            points[key[0]] = 0
-        points[key[0]] = points[key[0]] + angles[key]
+        if key[1] not in points:
+            points[key[1]] = 0
+        points[key[1]] = points[key[1]] + angles[key]
 
     return points
 
@@ -123,11 +123,10 @@ def getError(triangles, points):
     pointError = sum([abs(points[key]-400) for key in points])
     return triError, pointError
 
-angles, triangles = optimize(getAngles2(), 0.05 ,1000, 10)
+angles, triangles = optimize(Data.getAngles(), 0.05 ,100, 10)
 print(angles)
 print(triangles)
 print(getPoints(angles))
 triError, pointError = getError(triangles, getPoints(angles))
 print(triError)
 print(pointError)
-print(Data.getAngles())
