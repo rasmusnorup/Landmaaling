@@ -1,11 +1,13 @@
+import csv
+
 import numpy as np
 import Data
 
 def optimize(angles, stepSize, T, reg):
-    angles, triangles = getTriangles(angles)
+    triangles = getTriangles(angles)
     orgAngles = angles
     for i in range(T):
-        angles,triangles = getTriangles(angles)
+        triangles = getTriangles(angles)
 
         gradient = getGradient(orgAngles, angles, triangles, reg)
         for key in angles:
@@ -88,7 +90,7 @@ def getTriangles(angles):
             print("Angle " + str(key) + " " + str(angles[key]) + " removed")
             angles.pop(key)
     """
-    return angles, triangles
+    return triangles
 
 def getCost(triangles):
     cost = 0
@@ -123,10 +125,25 @@ def getError(triangles, points):
     pointError = sum([abs(points[key]-400) for key in points])
     return triError, pointError
 
-angles, triangles = optimize(Data.getAngles(), 0.05 ,100, 10)
+angles, triangles = optimize(Data.getAngles(), 0.05 , 100, 10)
 print(angles)
 print(triangles)
 print(getPoints(angles))
 triError, pointError = getError(triangles, getPoints(angles))
 print(triError)
 print(pointError)
+
+
+triError, pointError = getError(getTriangles(Data.getAngles()), getPoints(Data.getAngles()))
+print(triError)
+print(pointError)
+
+"""
+with open('result2.csv', 'w', newline='') as csvfile:
+    fieldnames = ['Navn', 'Vinkel']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter = ';')
+
+    writer.writeheader()
+    for key, val in angles.items():
+        writer.writerow({'Navn': key , 'Vinkel' : val})
+"""
