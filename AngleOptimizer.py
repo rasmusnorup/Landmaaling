@@ -1,5 +1,5 @@
 import csv
-
+import LengthFinder as LF
 import numpy as np
 import Data
 
@@ -124,21 +124,10 @@ def getError(triangles, points):
     triError = sum([abs(triangles[key]-200) for key in triangles])
     pointError = sum([abs(points[key]-400) for key in points])
     return triError, pointError
-
-angles, triangles = optimize(Data.getAngles(), 0.05 , 100, 10)
-print(angles)
-print(triangles)
-print(getPoints(angles))
-triError, pointError = getError(triangles, getPoints(angles))
-print(triError)
-print(pointError)
-
-
-triError, pointError = getError(getTriangles(Data.getAngles()), getPoints(Data.getAngles()))
-print(triError)
-print(pointError)
-
 """
+
+
+
 with open('result2.csv', 'w', newline='') as csvfile:
     fieldnames = ['Navn', 'Vinkel']
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter = ';')

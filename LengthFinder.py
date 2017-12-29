@@ -1,28 +1,46 @@
 import numpy as np
-import AngleOptimizer as Opt
 
-def findAllLengths(angles, triangles, known, length):
+
+def findAllLengths(angles, known, length):
+
     lengths = dict()
-    lengths[known] = length
+    #lengths[known] = length
     queue = [known]
     while queue:
+        print(queue)
         known = queue.pop()
         ang = dict()
         ang[known] = angles[known]
-        ang[known[1:3]+known[0]] = angles[known[1:3]+known[0]]
-        ang[known[2]+known[0:2]] = angles[known[2]+known[0:2]]
-        newLengths = findTriangleLengths(ang, known, lengths[known])
-        for key in newLengths:
-            if key not in lengths:
-                lengths[key] = newLengths[key]
+        left = known[1]+known[2]+known[0]
+        right = known[2]+known[0]+known[1]
 
-                for temp in angles:
-                    if key[2]+key[1] in temp and temp not in lengths and key[2]+key[1] == temp[1:3]:
-                        queue.append(temp)
-                        lengths[temp] = newLengths[key]
-                        print(queue)
+        if left in angles or right in angles:
+            if left in angles:
+                ang[left] = angles[left]
+            else:
+                ang[left] = 200 - angles[right] - angles[known]
+
+            if right in angles:
+                ang[right] = angles[right]
+            else:
+                ang[right] = 200 - angles[left] - angles[known]
+
+            if known in lengths:
+                length = lengths[known]
+            newLengths = findTriangleLengths(ang, known, length)
+            for key in newLengths:
+                if key not in lengths:
+                    lengths[key] = newLengths[key]
+                    for temp in angles:
+                        if key[2] == temp[0] and key[0] == temp[2] and temp not in lengths:
+                            queue.append(temp)
+                            if temp not in lengths:
+                                lengths[temp] = newLengths[key]
+                        if key[0] == temp[0] and key[2] == temp[2] and key[1] != temp[1]:
+                            queue.append(temp)
+                            if temp not in lengths:
+                                lengths[temp] = newLengths[key]
     return lengths
-
 
 
 def findTriangleLengths(angles, known, length):
@@ -34,28 +52,31 @@ def findTriangleLengths(angles, known, length):
         lengths[key] = np.sin(angles[key])*length/np.sin(angles[known])
     return lengths
 
+
 def convertToRadians(angles):
     for key in angles:
         angles[key] = angles[key]/200*np.pi
     return angles
+
+
 def convertToDegrees(angles):
     for key in angles:
         angles[key] = angles[key]*200/np.pi
     return angles
 
-"""
-a = dict()
-a["ACB"] = 50
-a["CBA"] = 90
-a["BAC"] = 60
+def makeConcatonatedAngles(angles, times):
+    newAngles = angles.copy()
+    for i in range(times):
+        for start in angles:
+            for end in angles:
+                if start[1] == end[1] and start[2] == end[0] and start[0] != end[2]:
+                    newAngles[start[0:2]+end[2]] = angles[start] + angles[end]
+        angles = newAngles.copy()
+    return angles
 
-a["CDB"] = 45
-a["DBC"] = 100
-a["BCD"] = 55
 
 #lengths = findTriangleLengths(a, "BAC", 100)
 #print(lengths)
-triangles = Opt.getTriangles(a)
-lengths = findAllLengths(a, triangles, "BAC", 100)
-print(lengths)
-"""
+#lengths = findAllLengths(a, "CBA", 100)
+#print(lengths)
+
