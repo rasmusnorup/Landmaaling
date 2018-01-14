@@ -4,7 +4,6 @@ import numpy as np
 def findAllLengths(angles, known, length):
 
     lengths = dict()
-    #lengths[known] = length
     queue = [known]
     while queue:
         print(queue)
