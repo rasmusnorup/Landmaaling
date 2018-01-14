@@ -6,7 +6,7 @@ def findAllLengths(angles, known, length):
     lengths = dict()
     queue = [known]
     while queue:
-        print(queue)
+        #print(queue)
         known = queue.pop()
         ang = dict()
         ang[known] = angles[known]

@@ -124,6 +124,10 @@ def getError(triangles, points):
     triError = sum([abs(triangles[key]-200) for key in triangles])
     pointError = sum([abs(points[key]-400) for key in points])
     return triError, pointError
+
+def getErrors(angles):
+    error = getError(getTriangles(angles),getPoints(angles))
+    return error
 """
 
 
