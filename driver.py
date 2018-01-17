@@ -3,6 +3,7 @@ import AngleOptimizer as Opt
 import numpy as np
 import Data
 import Coordinates as Co
+import Drawer as Draw
 
 
 a = dict()
@@ -35,14 +36,15 @@ print(pointError)
 
 angles = Data.getAngles()
 print(Opt.getErrors(angles))
-#angles, triangles = Opt.optimize(Data.getAngles(), 0.05 , 100, 10)
+#angles, triangles = Opt.optimize(angles, 0.05 , 100, 10)
 print(Opt.getErrors(angles))
-angles = LF.makeConcatonatedAngles(angles,7)
+angles = LF.makeConcatonatedAngles(angles,10)
 lengths = LF.findAllLengths(angles, "GJK", 330.0025)
 print(lengths)
 #print(angles)
 azi = Co.findAllAzimuths(angles, "FH", 257.78)
-print(azi)
-coordX,coordY = Co.findCoordinates(azi, lengths, "F")
-print(coordX)
-print(coordY)
+#print(azi)
+coords = Co.findCoordinates(azi, lengths, "F")
+print(coords)
+Draw.drawPoints(coords)
+Draw.drawSides(azi ,coords)

@@ -8,19 +8,19 @@ def findCoordinates(azimuths, leng, origo):
         if len[0] + len[2] not in lengths:
             lengths[len[0] + len[2]] = leng[len]
     queue = [origo]
-    coordinatesX = dict()
-    coordinatesY = dict()
-    coordinatesX[origo] = 0.0
-    coordinatesY[origo] = 0.0
+    coordinates = dict()
+
+    coordinates[origo] = [0.0, 0.0]
     while queue:
         point = queue.pop()
         for key in azimuths:
             if key[0] == point:
-                if key[1] not in coordinatesX:
-                    coordinatesX[key[1]] = coordinatesX[point] + np.cos(azimuths[key]) * lengths[key]
-                    coordinatesY[key[1]] = coordinatesY[point] + np.sin(azimuths[key]) * lengths[key]
+                if key[1] not in coordinates:
+                    X = coordinates[point][0] + np.cos(azimuths[key]) * lengths[key]
+                    Y = coordinates[point][1] + np.sin(azimuths[key]) * lengths[key]
+                    coordinates[key[1]] = [X, Y]
                     queue.append(key[1])
-    return coordinatesX, coordinatesY
+    return coordinates
 
 
 def findAllAzimuths(angles, known, azimuth):
